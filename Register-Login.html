@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up & Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to right,rgb(53, 46, 173),rgb(130, 141, 194));
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #5e58cc;
+            color: white;
+            padding: 16px;
+            text-align: center;
+        }
+        form {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5e58cc;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0f0b59;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .toggle a {
+            color: #5e58cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .toggle a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" id="form-header">Sign Up</div>
+        <form id="auth-form" action="/Register-Login" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" id="submit-btn">Register</button>
+        </form>        
+        <div class="toggle">
+            <span id="toggle-text">Already have an account?</span> <a href="#" id="toggle-link">Login</a>
+        </div>
+    </div>
+
+    <script>
+        const formHeader = document.getElementById('form-header');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleText = document.getElementById('toggle-text');
+        const toggleLink = document.getElementById('toggle-link');
+    
+        let isLogin = false;
+    
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+    
+            if (isLogin) {
+                formHeader.textContent = 'Login';
+                submitBtn.textContent = 'Login';
+                toggleText.textContent = "Don't have an account?";
+                toggleLink.textContent = 'Sign Up';
+            } else {
+                formHeader.textContent = 'Sign Up';
+                submitBtn.textContent = 'Register';
+                toggleText.textContent = 'Already have an account?';
+                toggleLink.textContent = 'Login';
+            }
+        });
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();  // Prevent form submission in the custom logic
+        
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+        
+            if (isLogin) {
+                alert(`Logging in with email: ${email}`);
+                // Continue with login logic here
+            } else {
+                alert(`Registering with email: ${email}`);
+                // Force the form to submit
+                authForm.submit();
+            }
+        });
+        
+    </script>
+    
+</body>
+</html>
+
