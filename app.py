@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///history.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-app.secret_key = "AIzaSyCLEx7N0WIaS86CEQZeaxSIesROBsBwjlc"
+app.secret_key = ""
 
 # Load the dataset
 df = pd.read_csv('questions.csv')
