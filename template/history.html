@@ -1,0 +1,12 @@
+<h2>Your History</h2>
+<form method="POST" action="/history">
+    <input type="text" name="topic" placeholder="Enter topic" required>
+    <button type="submit">Add Topic</button>
+</form>
+
+<ul>
+    {% for item in user_history %}
+    <li>{{ item.date_searched }} - {{ item.topic }}</li>
+    {% endfor %}
+</ul>
+<a href="/logout">Logout</a>
