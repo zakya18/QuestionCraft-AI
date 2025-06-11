@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Question Generator</title>
+  <style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color:rgb(165, 155, 225);
+}
+   .container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+   input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+}
+   button {
+    background-color:rgb(120, 76, 175);
+    color: white;
+    border: none;
+}
+   .results {
+    margin-top: 20px;
+    padding: 10px;
+    background: #eef;
+    border-radius: 5px;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>AI Question Generator</h2>
+    <form method="post" action="/generate">
+      <input type="text"   name="subject"       placeholder="Subject"               required>
+      <input type="text"   name="chapter"       placeholder="Chapter"               required>
+      <input type="number" name="num_questions" placeholder="Number of Questions"   required>
+      <select name="difficulty" required>
+        <option value="">Select Difficulty</option>
+        <option>Easy</option>
+        <option>Medium</option>
+        <option>Hard</option>
+      </select>
+      <select name="qtype" required>
+        <option value="">Select Question Type</option>
+        <option>MCQ</option>
+        <option>Short Answer</option>
+        <option>Long Answer</option>
+      </select>
+      <button type="submit">Generate</button>
+    </form>
+
+    {% if questions %}
+      <div class="generated-questions">
+        {{ questions | safe }}
+      </div>
+    {% endif %}
+
+  </div>
+</body>
+</html>
