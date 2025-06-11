@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Question Paper Generator</title>
+    <style>
+        body, html {
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            background-image: url("{{ url_for('static', filename='Capture1.PNG') }}");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            height: 100%;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #233654;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            background-color: #bed6fa;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0.2, 0.2);
+            border-radius: 10px;
+            width: 600px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .myclass {
+            background-color: #bed6fa;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0.2, 0.2);
+            border-radius: 10px;
+            height: 80px;
+            width: 600px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            margin: 0 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #5e58cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #0f0b59;
+        }
+
+        #questions {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .question {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .chatbot {
+            background-color: #bed6fa;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0.2, 0.2);
+            border-radius: 10px;
+            width: 600px;
+            text-align: center;
+            margin-top: 30px;
+            
+        }
+
+
+        #chat-window {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            max-width: 85%;
+        }
+
+        .message .avatar {
+            font-size: 1.5rem;
+            padding-top: 5px;
+        }
+
+        .message .text {
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.6;
+        }
+/* Styles for markdown content */
+        .message .text p { margin-top: 0; margin-bottom: 0.5em; }
+        .message .text ul, .message .text ol { padding-left: 20px; }
+        .message .text code { background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+        .message .text pre { background-color: #2d2d2d; color: #f1f1f1; padding: 10px; border-radius: 8px; overflow-x: auto; }
+        .message .text pre code { background-color: transparent; }
+
+        .bot-message {
+            align-self: flex-start;
+        }
+        .bot-message .text {
+            background-color: var(--bot-msg-bg);
+            border-top-left-radius: 4px;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .user-message .text {
+            background-color: var(--user-msg-bg);
+            border-top-right-radius: 4px;
+        }
+
+        .error .text {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        #loading-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            color: #888;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+}
+
+        .hidden {
+            display: none;
+        }
+
+        #chat-form {
+            display: flex;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        #question-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #question-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        #chat-form button {
+            margin-left: 10px;
+            padding: 12px 25px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #chat-form button:hover {
+            background-color: #357abd;
+        }
+    </style>
+</head>
+<body>
+    <h1>QuestionCraft AI</h1>
+    <div class="header">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('register') }}">Register-Login</a>
+        <a href="{{ url_for('contact') }}">Contact Us</a>
+    </div>
+
+    <div class="container">
+        <h2>AI Question Paper Generator</h2>
+    <form method="POST" action="/">
+        <div class="input-group">
+            <input type="text" id="topic" name="topic" placeholder="Enter a topic for the question paper">
+            <input type="number" id="numQuestions" placeholder="Number of questions" min="1">
+            <button type="button" onclick="generateQuestions()">Generate Questions</button>
+        </div>
+        <div id="questions"></div>
+        <button type="button" onclick="downloadPDF()">Download Questions PDF</button>
+        <button type="button" onclick="generateAnswers()">Generate Answers</button>
+        <div id="answers"></div>
+        <button type="submit">Submit</button>
+    </div>
+    </form>
+
+    <div class = "myclass">
+        <h2>CUSTOMIZE QUESTION PAPER</h2>
+        <a href="{{ url_for('customize') }}">customize question paper</a>
+    <div>
+
+
+    <div class="container my-3">
+        <h2>Your history</h2>
+        {% if allHistory|length == 0 %}
+            <div class="alert alert-dark" role="alert">
+                No history found!
+            </div>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">SNo</th>
+                        <th scope="col">Topic</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for history in allHistory %}
+                    <tr>
+                        <th scope="row">{{ history.sno }}</th>
+                        <td>{{ history.topic }}</td>
+                        <td>{{ history.date_searched }}</td>
+                        <td>
+                            <a href="/delete/{{ history.sno }}" class="btn btn-outline-dark btn-sm mx-1">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <div class="chatbot">
+            <h2>🎓Q&A Tutor</h2>
+            <p>Ask any academic question and get a helpful, detailed answer.</p>
+        
+        <div id="chat-window">
+            <div class="message bot-message">
+                <div class="avatar">🤖</div>
+                <div class="text">Hello! I'm your AI Tutor. How can I help you today?</div>
+            </div>
+        </div>
+        
+        <div id="loading-indicator" class="hidden">
+            <div class="spinner"></div>
+            <span>Generating answer...</span>
+        </div>
+
+        <form id="chat-form">
+            <input type="text" id="question-input" placeholder="Type your question here..." autocomplete="off" required>
+            <button type="submit">Ask</button>
+        </form>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const questionInput = document.getElementById('question-input');
+        const chatWindow = document.getElementById('chat-window');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        chatForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission (page reload)
+            
+            const question = questionInput.value.trim();
+            if (!question) return;
+
+            // Display user's question
+            appendMessage(question, 'user-message');
+            questionInput.value = ''; // Clear input field
+            loadingIndicator.classList.remove('hidden'); // Show spinner
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!response.ok) {
+                    // Handle HTTP errors like 500 or 400
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'A server error occurred.');
+                }
+
+                const data = await response.json();
+                appendMessage(data.answer, 'bot-message', true); // Append bot's answer as HTML
+
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMessage = `Sorry, an error occurred: ${error.message}`;
+                appendMessage(errorMessage, 'bot-message error');
+            } finally {
+                loadingIndicator.classList.add('hidden'); // Hide spinner
+                questionInput.focus(); // Refocus on input for the next question
+            }
+        });
+
+        function appendMessage(content, className, isHTML = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${className}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = className.includes('user') ? '🧑‍🎓' : '🤖';
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'text';
+
+            if (isHTML) {
+                textDiv.innerHTML = content; // Safely render HTML from our trusted backend
+            } else {
+                textDiv.textContent = content;
+            }
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(textDiv);
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
+        }
+    
+        function generateQuestions() {
+            const topic = document.getElementById('topic').value;
+            const numQuestions = document.getElementById('numQuestions').value || 5;
+
+            if (!topic) {
+                alert('Please enter a topic.');
+                return;
+            }
+
+            fetch('/generate_question?${Date.now()}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: topic, num_questions: numQuestions })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const questionsDiv = document.getElementById('questions');
+                questionsDiv.innerHTML = '';
+
+                if (data.questions) {
+                    data.questions.forEach((question, index) => {
+                        const questionElement = document.createElement('div');
+                        questionElement.className = 'question';
+                        questionElement.textContent = `${index + 1}. ${question}`;
+                        questionsDiv.appendChild(questionElement);
+                    });
+                } else if (data.error) {
+                    questionsDiv.textContent = data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to generate questions. Please try again.');
+            });
+        }
+
+        function downloadPDF() {
+            const topic = document.getElementById('topic').value;
+            const numQuestions = document.getElementById('numQuestions').value || 5;
+
+            if (!topic) {
+                alert('Please enter a topic.');
+                return;
+            }
+
+            fetch('/download_questions_pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: topic, num_questions: numQuestions })
+            })
+            .then(response => {
+                if (response.ok) return response.blob();
+                else throw new Error('Failed to generate PDF');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${topic}_questions.pdf`;
+                link.click();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to download PDF. Please try again.');
+            });
+        }
+
+        function generateAnswers() {
+          const questionElements = document.querySelectorAll(".question");
+          const questions = Array.from(questionElements).map(q => q.textContent.replace(/^\d+\.\s*/, ''));
+
+          if (questions.length === 0) {
+            alert("No questions to answer.");
+            return;
+    }
+
+    fetch("/generate_answers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ questions: questions })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const answersDiv = document.getElementById("answers");
+        answersDiv.innerHTML = "<h3>Answers</h3>";
+
+        data.qa_pairs.forEach((qa, index) => {
+            const answerElement = document.createElement("div");
+            answerElement.className = "question";
+            answerElement.innerHTML = `<b>Q${index + 1}: ${qa.question}</b><br><i>A: ${qa.answer}</i>`;
+            answersDiv.appendChild(answerElement);
+        });
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Failed to generate answers.");
+    });
+}
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+    
+
+
+
+
+
+
